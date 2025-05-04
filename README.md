@@ -9,6 +9,7 @@ https://www.kaggle.com/code/mpwolke/500-greatest-songs/input
 
 # Model Oluşturma Aşaması
  1- Kütüphane kurulum işlemleri ve veriyi çekme işlemleri
+ 
 import pandas as pd
 import numpy as np
 
@@ -26,6 +27,7 @@ df = pd.read_csv('top500song.csv')
 df.head() # daha sonrasında mevcut dosyamızı çekerek ilk 5 verimizi görüntülüyoruz.
 
 2- Ön İşleme (Pre-processing) işlemleri
+
 texts = df['description'].dropna().tolist() # işlem yapmak istediğimiz sütunu seçiyoruz.
 
 lemmatizer = WordNetLemmatizer()
@@ -48,6 +50,7 @@ for sentence in sentences:
      filtered_tokens = [] 
      
 3- Lemmatization işlemi
+
       Kelimeleri tokenleştirip, lemmatize etme ve stemleme
 def preprocess_sentence(sentence):
      tokens = word_tokenize(sentence)
@@ -84,6 +87,7 @@ with open(r"C:\Users\lenovo\Desktop\metin_verileri_ile_dogal_dil_isleme\lemmatiz
  Aynı kod parçalarını Stemmed edilmiş veriler içinde bazı parametreleri değiştirerek yapabiliriz. Daha sonrasında kaydedip vektörleştirme işlemini gerçekleştireceğiz.
 
 4- TF-IDF vektörleştirme işlemi için çağırıyoruz.
+
 import pandas as pd
 dflemma = pd.read_csv(r"C:\Users\lenovo\Desktop\metin_verileri_ile_dogal_dil_isleme\lemmatized_sentences.csv", encoding='utf-8')
 dflemma.head(5) # İlk 5 verimizi bu kod ile ekrana yansıtıyoruz.
@@ -138,6 +142,7 @@ for index in top_5_indices:
  TF-IDF vektörleme işlemini bazı parametreleri değiştirerek Stemm edilmiş veriler içinde kullanabiliriz.
 
 5- Word2vec Vektörleştirme işlemi 
+
 Stemmed edilmiş veriler üzerinden görelim.
 import gensim
 from gensim.models import Word2Vec
