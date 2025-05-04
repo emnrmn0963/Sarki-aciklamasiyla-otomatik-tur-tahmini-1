@@ -46,6 +46,7 @@ filtered_sentences = []  Kelimeleri tokenleştirip sadece harf olan kelimeleri a
 for sentence in sentences:
      tokens = word_tokenize(sentence) #cümleleri kelimelere bölüyoruz ve boş bir liste oluşturuyoruz.
      filtered_tokens = [] 
+     
 3- Lemmatization işlemi
       Kelimeleri tokenleştirip, lemmatize etme ve stemleme
 def preprocess_sentence(sentence):
@@ -192,6 +193,8 @@ print_similar_words(model_2, "Stemmed Skipgram Window 4 Dim 100")
 print_similar_words(model_3, "Lemmatized Skipgram Window 2 Dim 300")
  Örnek olarak "young" kelimesi için en benzer 3 kelimeyi skorları ile birlikte ekrana yazdırmasını istiyoruz.
  Stemmed edilmiş veriler için uyguladığımız kod parçalarını Lemmatized edilmiş veriler için bazı parametreleri değiştirerek kullanabiliriz. 
+
+
 6- Sonuçların Değerlendirilmesi
 Şarkı açıklamaları üzerinden tür tahmini yapılmaya çalışılır.
 
