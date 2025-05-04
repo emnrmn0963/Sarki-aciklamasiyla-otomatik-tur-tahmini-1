@@ -208,16 +208,16 @@ print_similar_words(model_3, "Lemmatized Skipgram Window 2 Dim 300")
 # Projede Kullanılan Kütüphaneler
 Tüm kütüphaneler kod kısmında açıkça belirtilmiştir.
 
-- Kütüphanele ve Özellikleri
+- Kütüphaneler ve Kullanılma Amacı
  
 numpy -                   Çok boyutlu diziler,
                         yüksek performanslı sayısal işlemler ve
                         matrisleri işleme ve analiz etme konusunda
-                        başarılıdır.
+                        başarılıdır. Veri manipülasyonu için kullanıldı.
 
 pandas -                 Veri işleme ve analiz için kullanıldı.
 
-nltk -                   Doğal dil işleme görevlerini basitleştirir.
+nltk -                   Doğal dil işleme görevlerini basitleştirir. Tokenizasyon ve Lemmatizasyon için kullanıldı.
 
 matplotlib -              Grafiklerin çizimi için kulanılmıştır.
 
