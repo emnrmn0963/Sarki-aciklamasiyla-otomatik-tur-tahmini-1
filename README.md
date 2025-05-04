@@ -1,4 +1,4 @@
-#Şarkı Açıklamaları İle Otomatik Tür Tahmini
+# Şarkı Açıklamaları İle Otomatik Tür Tahmini
 Bu projede şarkı açıklamalarının  metinsel içeriğine göre şarkıyı söyleyen sanatçıyı veya grubu tahmin etme işlemi üzerine işlemler gerçekleştirilecektir.
 Özellikleri tam anlamıyla karşılayan bir veri seti bulunamadığı için şarkı açıklamalarının metinsel içeriğine göre sanatçıların ürün ortaya koyduğu belirli türler 
 üzerinden ilerleme sağlanacaktır. Çeşitli yöntemler denendiysede sitelerin güvenlik politikaları nedeniyle verilere ulaşılamamıştır.
@@ -7,7 +7,7 @@ Mevcut veri, 500 satır ve 9 tane sütündan oluşmaktadır. 281 kb ve .csv form
 Bu çalışma yapıldığı sırada örnek alınan veri seti kaggle kullanıcısı tarafından değiştirilmiştir. Aşağıda paylaşılan bağlantı üzerinden yeni verilere erişim sağlayabilirsiniz.
 https://www.kaggle.com/code/mpwolke/500-greatest-songs/input
 
-#- Model Oluşturma Aşaması-
+# Model Oluşturma Aşaması
  1- Kütüphane kurulum işlemleri ve veriyi çekme işlemleri
 import pandas as pd
 import numpy as np
@@ -194,7 +194,7 @@ print_similar_words(model_3, "Lemmatized Skipgram Window 2 Dim 300")
 6- Sonuçların Değerlendirilmesi
 Şarkı açıklamaları üzerinden tür tahmini yapılmaya çalışılır.
 
-#Veri Setinin Kullanılabileceği Diğer Analizler 
+# Veri Setinin Kullanılabileceği Diğer Analizler 
 + Keşifsel veri analizi
 + Zamana bağlı trend analizi
 + Sanatçı şarkı analizi 
@@ -204,20 +204,20 @@ print_similar_words(model_3, "Lemmatized Skipgram Window 2 Dim 300")
 Tüm kütüphaneler kod kısmında açıkça belirtilmiştir.
 
 - Kütüphane             -Özellikleri
-numpy                   Çok boyutlu diziler,
+numpy -                   Çok boyutlu diziler,
                         yüksek performanslı sayısal işlemler ve
                         matrisleri işleme ve analiz etme konusunda
                         başarılıdır.
 
-pandas                  Veri işleme ve analiz için kullanıldı.
+pandas -                 Veri işleme ve analiz için kullanıldı.
 
-nltk                    Doğal dil işleme görevlerini basitleştirir.
+nltk -                   Doğal dil işleme görevlerini basitleştirir.
 
-matplotlib              Grafiklerin çizimi için kulanılmıştır.
+matplotlib -              Grafiklerin çizimi için kulanılmıştır.
 
-scikit-learn           TF-IDF vektörleştirme ve cosine similarity hesaplama işlemi için kullanıldı.
+scikit-learn -           TF-IDF vektörleştirme ve cosine similarity hesaplama işlemi için kullanıldı.
 
-gensim                 Word2vec vektörleştirme için kullanıldı.
+gensim -                Word2vec vektörleştirme için kullanıldı.
 
 
 
