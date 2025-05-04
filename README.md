@@ -24,6 +24,7 @@ nltk.download('wordnet') # nltk işlemlerini gerçekleştirebilmemiz için gerek
 
 df = pd.read_csv('top500song.csv')
 df.head() # daha sonrasında mevcut dosyamızı çekerek ilk 5 verimizi görüntülüyoruz.
+
 2- Ön İşleme (Pre-processing) işlemleri
 texts = df['description'].dropna().tolist() # işlem yapmak istediğimiz sütunu seçiyoruz.
 
