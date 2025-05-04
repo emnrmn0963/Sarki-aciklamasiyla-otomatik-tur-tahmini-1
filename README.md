@@ -196,6 +196,7 @@ print_similar_words(model_3, "Lemmatized Skipgram Window 2 Dim 300")
 
 
 6- Sonuçların Değerlendirilmesi
+
 Şarkı açıklamaları üzerinden tür tahmini yapılmaya çalışılır.
 
 # Veri Setinin Kullanılabileceği Diğer Analizler 
@@ -207,7 +208,8 @@ print_similar_words(model_3, "Lemmatized Skipgram Window 2 Dim 300")
 # Projede Kullanılan Kütüphaneler
 Tüm kütüphaneler kod kısmında açıkça belirtilmiştir.
 
-- Kütüphane             -Özellikleri
+- Kütüphanele ve Özellikleri
+ 
 numpy -                   Çok boyutlu diziler,
                         yüksek performanslı sayısal işlemler ve
                         matrisleri işleme ve analiz etme konusunda
