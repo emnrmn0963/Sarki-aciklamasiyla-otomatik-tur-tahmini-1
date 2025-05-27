@@ -7,228 +7,125 @@ Mevcut veri, 500 satır ve 9 tane sütündan oluşmaktadır. 281 kb ve .csv form
 Bu çalışma yapıldığı sırada örnek alınan veri seti kaggle kullanıcısı tarafından değiştirilmiştir. Aşağıda paylaşılan bağlantı üzerinden yeni verilere erişim sağlayabilirsiniz.
 https://www.kaggle.com/code/mpwolke/500-greatest-songs/input
 
-# Model Oluşturma Aşaması
- 1- Kütüphane kurulum işlemleri ve veriyi çekme işlemleri
- 
-import pandas as pd
-import numpy as np
+# Metin Benzerliği ve Şarkı Öneri Sistemi
 
-import nltk # Metin tabanlı bir işlem gerçekleştireceğimiz için bu kütüphaneyi kullanıyoruz.
-from nltk.tokenize import word_tokenize, sent_tokenize
-from nltk.corpus import stopwords
-from nltk.stem import WordNetLemmatizer, PorterStemmer
-import csv # Dosyamızın hangi formatta olduğunu dikkate alarak bu kısmı değiştiriyoruz.
+Bu proje, popüler şarkıların açıklamalarını (description) kullanarak metin ön işleme, vektörleştirme (TF-IDF, Word2Vec) ve metin benzerliği analizlerini (Kosinüs Benzerliği, Jaccard Benzerliği) gerçekleştiren bir çalışmadır. Proje, farklı metin işleme tekniklerinin (lemmatization ve stemming) metin benzerliği üzerindeki etkilerini karşılaştırmalı olarak incelemeyi ve buna dayalı bir şarkı öneri sistemi prototipi oluşturmayı hedeflemektedir.
 
-nltk.download('punkt')
-nltk.download('stopwords')
-nltk.download('wordnet') # nltk işlemlerini gerçekleştirebilmemiz için gerekli ayarlamaları yapıyoruz.
+## İçindekiler
 
-df = pd.read_csv('top500song.csv')
-df.head() # daha sonrasında mevcut dosyamızı çekerek ilk 5 verimizi görüntülüyoruz.
+- [Proje Amacı](#proje-amacı)
+- [Veri Seti](#veri-seti)
+- [Kurulum](#kurulum)
+- [Kullanım](#kullanım)
+- [Dosya Yapısı](#dosya-yapısı)
+- [Metodoloji](#metodoloji)
+  - [Veri Ön İşleme](#veri-ön-işleme)
+  - [Vektörleştirme](#vektörleştirme)
+  - [Metin Benzerliği Analizi](#metin-benzerliği-analizi)
+- [Sonuçlar ve Değerlendirme](#sonuçlar-ve-değerlendirme)
+- [Katkıda Bulunma](#katkıda-bulunma)
+- [Lisans](#lisans)
+- [İletişim](#iletişim)
 
-2- Ön İşleme (Pre-processing) işlemleri
+## Proje Amacı
 
-texts = df['description'].dropna().tolist() # işlem yapmak istediğimiz sütunu seçiyoruz.
+Bu projenin temel amaçları şunlardır:
 
-lemmatizer = WordNetLemmatizer()
-stemmer = PorterStemmer() # Lemmatizer ve Stemmer işlemini başlatıyoruz.
+1.  **Metin Ön İşleme:** Şarkı açıklamalarını temizleme, normalleştirme ve farklı metin işleme teknikleri (lemmatization ve stemming) uygulayarak analiz için hazır hale getirme.
+2.  **Vektörleştirme:** Ön işlenmiş metinleri TF-IDF ve Word2Vec gibi teknikler kullanarak sayısal vektörlere dönüştürme.
+3.  **Metin Benzerliği:** Vektörleştirilmiş metinler arasında Kosinüs Benzerliği ve Jaccard Benzerliği gibi metriklerle benzerlik analizi yapma.
+4.  **Model Karşılaştırması:** Lemmatization ve stemming'in farklı vektörleştirme yöntemleri ve benzerlik metrikleri üzerindeki etkilerini karşılaştırma.
 
-text = df['description'][0]  # Açıklama kısmını ele alarak cümle ayırma işlemini gerçekleştiriyoruz.
-sentences = sent_tokenize(text)
-sentences[:10]
+## Veri Seti
 
-stop_words = set(stopwords.words('english')) # Stopwords listesini ingilizce olarak alıyoruz.
+Projede kullanılan veri seti `top500song.csv` adlı dosyadan gelmektedir. Bu veri seti, her bir şarkının başlığını, sanatçısını ve açıklamasını içeren popüler şarkıların bir listesini barındırmaktadır.
 
-stop_words_list = list(stop_words)
-print(stop_words_list[:50]) # 50 tanesini görüyoruz.
+-   `top500song.csv`: 500 adet şarkının bilgisini içeren veri dosyası.
 
-filtered_sentences = []  Kelimeleri tokenleştirip sadece harf olan kelimeleri alıyoruz ve stopword'leri çıkartıyoruz
+## Kurulum
 
+Projeyi yerel olarak çalıştırmak için aşağıdaki adımları izleyin:
 
-for sentence in sentences:
-     tokens = word_tokenize(sentence) #cümleleri kelimelere bölüyoruz ve boş bir liste oluşturuyoruz.
-     filtered_tokens = [] 
-     
-3- Lemmatization işlemi
+1.  Depoyu klonlayın:
+    ```bash
+    git clone [https://github.com/emnrmn0963/Sarki-aciklamasiyla-otomatik-tur-tahmini-1.git](https://github.com/emnrmn0963/Sarki-aciklamasiyla-otomatik-tur-tahmini-1.git)
+    cd Sarki-aciklamasiyla-otomatik-tur-tahmini-1
+    ```
+2.  Gerekli kütüphaneleri yükleyin (Python 3.x önerilir):
+    ```bash
+    pip install pandas numpy scikit-learn nltk gensim matplotlib
+    ```
+3.  NLTK veri paketlerini indirin (gerekirse):
+    ```python
+    import nltk
+    nltk.download('punkt')
+    nltk.download('stopwords')
+    nltk.download('wordnet')
+    ```
 
-      Kelimeleri tokenleştirip, lemmatize etme ve stemleme
-def preprocess_sentence(sentence):
-     tokens = word_tokenize(sentence)
+## Kullanım
 
-     for token in tokens:
-        if token.isalpha(): Tokenlerin metin olup olmadığını kontrol ediyor (nümerik olan verileri işleme almıyor).
-            token_lower = token.lower()  küçük harfe çevirme işlemi
-            if token_lower not in stop_words:  Eğer küçük harfe çevrilmiş mevcut kelimeler stopword içinde yer almıyorsa
-                               filtered_tokens.append(token_lower)  filtered_tokens listesine yukarıda belirtilen kurallara uygun yeni kelime ekle.
-        filtered_sentences.append(filtered_tokens) filtre edilmiş cümleleri filtered_sentences listesine ekle.
-        
-print(filtered_sentences[:10])  ilk 10 cümleyi ekrana yazdır.
+Proje, Jupyter Notebook'lar aracılığıyla adım adım incelenebilir. Sırasıyla aşağıdaki notebook'ları çalıştırmanız önerilir:
 
-lemmatizer = WordNetLemmatizer()  Her cümleyi lemetize et ve Lemmatizeri başlat
-tokenized_corpus_lemmatized = []   Lemma edilmiş cümleleri saklamak için yeni bir boş liste oluştur.
-for filtered_tokens in filtered_sentences:
-    lemmatized_tokens = []  Lemma edilmiş kelimeleri saklamak için boş bir liste oluştur.
-    for token in filtered_tokens:
-        lemma = lemmatizer.lemmatize(token)  Tokenleri tek tek lemma etme işlemi.
-        lemmatized_tokens.append(lemma)  Lemma edilmiş tokenleri lemmatized_tokens listesine ekleme işlemi.
-        tokenized_corpus_lemmatized.append(lemmatized_tokens)  Lemma edilmiş cümleleri 
-        #tokenized_corpus_lemmatized ekleme işlemi.
-print(tokenized_corpus_lemmatized[:10])
+1.  `02_datapreproccess.ipynb`: Ham verinin ilk ön işleme adımlarını (temizleme, küçük harfe çevirme, noktalama işaretlerini kaldırma vb.) içerir.
+2.  `lemmatizeandstemmed.ipynb`: Ön işlenmiş metinlere lemmatization ve stemming işlemlerini uygular ve sonuçları karşılaştırır.
+3.  `vectorization_tf-idf.ipynb`: TF-IDF vektörleştirmesini gerçekleştirir ve TF-IDF matrislerini oluşturur.
+4.  `word2vec.ipynb`: Word2Vec modellerini eğitir ve kelime vektörlerini oluşturur.
+5.  `metin_benzerligi.ipynb`: Farklı vektörleştirme yöntemleri ve ön işleme teknikleri kullanılarak metinler arası benzerlik analizini (Kosinüs ve Jaccard) yapar ve sonuçları görselleştirir.
 
+## Dosya Yapısı
+├── data/
+│   ├── top500song.csv                  # Ham veri seti
+│   ├── preprocessed_data_lemmatized_only.csv # Lemmatized metinlerin ön işlenmiş hali
+│   ├── preprocessed_data_stemmed_only.csv    # Stemmed metinlerin ön işlenmiş hali
+│   ├── tfidf_lemmatized.csv            # Lemmatized veriden oluşturulan TF-IDF matrisi
+│   └── tfidf_stemmed.csv               # Stemmed veriden oluşturulan TF-IDF matrisi
+├── models/
+│   ├── Eğitilmiş 16 adet model dosyası
+├── notebooks/
+│   ├── 02_datapreproccess.ipynb        # Veri ön işleme adımları
+│   ├── lemmatizeandstemmed.ipynb       # Lemmatization ve Stemming karşılaştırması
+│   ├── vectorization_tf-idf.ipynb      # TF-IDF vektörleştirme
+│   ├── word2vec.ipynb                  # Word2Vec model eğitimi
+│   └── metin_benzerligi.ipynb          # Metin benzerliği analizi ve sonuçlar
+└── README.md                           # Bu dosya
 
- lemmatize edilmiş cümleleri bir csv dosyasına kaydedilmesi gerekmektedir.
-with open(r"C:\Users\lenovo\Desktop\metin_verileri_ile_dogal_dil_isleme\lemmatized_sentences.csv", mode="w", newline="", 
-          encoding="utf-8") as file:
-    writer = csv.writer(file)
-    # Her cümleyi bir satır olarak yazma komutu.
-    for tokens in tokenized_corpus_lemmatized:
-        writer.writerow([' '.join(tokens)])
+## Metodoloji
 
- Aynı kod parçalarını Stemmed edilmiş veriler içinde bazı parametreleri değiştirerek yapabiliriz. Daha sonrasında kaydedip vektörleştirme işlemini gerçekleştireceğiz.
+Proje, aşağıdaki adımları takip eden bir metodolojiye sahiptir:
 
-4- TF-IDF vektörleştirme işlemi için çağırıyoruz.
+### Veri Ön İşleme
 
-import pandas as pd
-dflemma = pd.read_csv(r"C:\Users\lenovo\Desktop\metin_verileri_ile_dogal_dil_isleme\lemmatized_sentences.csv", encoding='utf-8')
-dflemma.head(5) # İlk 5 verimizi bu kod ile ekrana yansıtıyoruz.
+`02_datapreproccess.ipynb` ve `lemmatizeandstemmed.ipynb` notebook'larında, `top500song.csv` dosyasındaki `description` sütunu üzerinde kapsamlı bir ön işleme yapılır:
 
-from sklearn.feature_extraction.text import TfidfVectorizer
- Ön işlenmiş token listelerini tekrar metne çeviriyoruz
-lemmatized_texts = [' '.join(tokens) for tokens in tokenized_corpus_lemmatized]
-lemmatized_texts[:3] 
+* Küçük harfe çevirme
+* Noktalama işaretlerini ve özel karakterleri kaldırma
+* Sayıları kaldırma
+* Stop word'leri kaldırma
+* **Lemmatization:** Kelimeleri kök hallerine dönüştürme (örneğin, "running" -> "run").
+* **Stemming:** Kelimelerin eklerini kaldırarak daha kısa kök formlarına indirgeme (örneğin, "runner" -> "run").
 
- TF-IDF vektörizer'ı başlatıyoruz
-vectorizer = TfidfVectorizer()
- TF-IDF matrisini oluşturuyoruz
- Terim frekanslarını, belge frekanslarını hesaplar
- TF-IDF vektörlerine dönüştürür
-tfidf_matrix = vectorizer.fit_transform(lemmatized_texts)
- TF-IDF vektörleştirme işleminde kullanılan tüm kelimelerin eşsiz bir listesini döndürür
-feature_names = vectorizer.get_feature_names_out()
- TF-IDF matrisini pandas DataFrame'e çevir – görünürlük açısından – çalışması kolaydır
-tfidf_df = pd.DataFrame(tfidf_matrix.toarray(), columns=feature_names)
- İlk birkaç satırı gösterelim – ilk 5 cümle
-print(tfidf_df.head())
-tfidf_df.to_csv("tfidf_lemmatized.csv",index=False)
- Her satır bir cümleyi temsil eder
- Her sütun bir kelimeyi temsil eder
- Hücreler ise o kelimenin o cümledeki TF-IDF skorudur – her cümle için değişiklik gösterir.
+Bu işlemler sonucunda `preprocessed_data_lemmatized_only.csv` ve `preprocessed_data_stemmed_only.csv` dosyaları oluşturulur.
 
- İlk cümle için TF-IDF skorlarını alıyoruz
-first_sentence_vector = tfidf_df.iloc[0]
- Skorlara göre sırala (yüksekten düşüğe)
-top_5_words = first_sentence_vector.sort_values(ascending=False).head(5)
- Sonucu yazdır
-print("İlk cümlede en yüksek TF-IDF skoruna sahip 5 kelime:")
-print(top_5_words)  İlk cümlede yer alan 5 kelimeyi skorları yüksekten düşüğe olacak şekilde sıralıyor.
-* TF-IDF vektörleştirme işlemi için "cosine similarty" ile kelimelerin benzerlik oranları hesaplanır.
-import numpy as np
-from sklearn.metrics.pairwise import cosine_similarity
- like kelimesinin vektörünü alalım
-like_index = feature_names.tolist().index('like')  'like' kelimesinin indeksini bul
- like kelimesinin TF-IDF vektörünü alıyoruz ve 2D formatta yapıyoruz
-like_vector = tfidf_matrix[:, like_index].toarray()
- Tüm kelimelerin TF-IDF vektörlerini alıyoruz
-tfidf_vectors = tfidf_matrix.toarray()
- Cosine similarity hesaplayalım
-similarities = cosine_similarity(like_vector.T, tfidf_vectors.T)
-#Benzerlikleri sıralayalım ve en yüksek 5 kelimeyi seçelim
-similarities = similarities.flatten()
-top_5_indices = similarities.argsort()[-6:][::-1]  6. en büyükten başlıyoruz çünkü kendisi de dahil
- Sonuçları yazdıralım
-for index in top_5_indices:
-    print(f"{feature_names[index]}: {similarities[index]:.4f}")
- Örnek bir kelime üzerinden vektör işlemi yapıyoruz ve "like" kelimesine en benzer olan kelimeleri benzerlik skorları ile birlikte görüyoruz.
- TF-IDF vektörleme işlemini bazı parametreleri değiştirerek Stemm edilmiş veriler içinde kullanabiliriz.
+### Vektörleştirme
 
-5- Word2vec Vektörleştirme işlemi 
+Ön işlenmiş metinler iki farklı yöntemle sayısal vektörlere dönüştürülür:
 
-Stemmed edilmiş veriler üzerinden görelim.
-import gensim
-from gensim.models import Word2Vec
-import nltk
-from nltk.tokenize import word_tokenize, sent_tokenize
-from nltk.corpus import stopwords
-from nltk.stem import WordNetLemmatizer, PorterStemmer
-import csv  Öncelikle kütüphanelerimizi import ederek başlıyoruz. Tek bir dosyada çalışıyorsanız sadece eksik kütüphaneleri import etmeniz yeterli.
+* **TF-IDF (`vectorization_tf-idf.ipynb`):** Her bir kelimenin bir dokümandaki sıklığını ve tüm dokümanlardaki nadirliğini ölçerek önemini belirleyen bir tekniktir. Hem lemmatize edilmiş hem de stemmed veri setleri için TF-IDF matrisleri (`tfidf_lemmatized.csv`, `tfidf_stemmed.csv`) oluşturulur.
+* **Word2Vec (`word2vec.ipynb`):** Kelimelerin bağlamlarına göre vektör temsillerini öğrenen sinir ağı tabanlı bir yöntemdir. Farklı parametrelerle (CBOW/Skip-gram, window size, vector size) Word2Vec modelleri eğitilir.
 
-import pandas as pd
-dfstemmsen = pd.read_csv(r"C:\Users\lenovo\Desktop\metin_verileri_ile_dogal_dil_isleme\stemmed_sentences.csv", encoding='utf-8')  İşlem yapacağımız dosyamızı çekiyoruz.
+### Metin Benzerliği Analizi
 
-parameters = [
-{'model_type': 'cbow', 'window': 2, 'vector_size': 100},
-{'model_type': 'skipgram', 'window': 2, 'vector_size': 100},
-{'model_type': 'cbow', 'window': 4, 'vector_size': 100},
-{'model_type': 'skipgram', 'window': 4, 'vector_size': 100},
-{'model_type': 'cbow', 'window': 2, 'vector_size': 300},
-{'model_type': 'skipgram', 'window': 2, 'vector_size': 300},
-{'model_type': 'cbow', 'window': 4, 'vector_size': 300},
-{'model_type': 'skipgram', 'window': 4, 'vector_size': 300}
-]  Parametrelerimizi düzgünce ve sırasıyla yazıyoruz.
+`metin_benzerligi.ipynb` notebook'unda, farklı vektörleştirme yöntemleri ve ön işleme teknikleriyle oluşturulan metin temsilleri arasında benzerlik analizi yapılır:
 
-def train_and_save_model(corpus, params, model_name):
-    model = Word2Vec(corpus, vector_size=params['vector_size'],
- window=params['window'], min_count=1, sg=1 if params['model_type'] == 'skipgram' else 0)
-    
-    model.save(f"{model_name}_{params['model_type']}_window{params['window']}_dim{params['vector_size']}.model")
-    print(f"{model_name}_{params['model_type']}_window{params['window']}_dim{params['vector_size']}.model saved!")
+* **Kosinüs Benzerliği:** Vektörler arasındaki açının kosinüsünü ölçerek benzerliği belirler. Özellikle TF-IDF ve Word2Vec vektörleri için kullanılır.
+* **Jaccard Benzerliği:** İki kümenin kesişiminin birleşimine oranını hesaplayarak benzerliği ölçer. Genellikle kelime setleri veya belge kümeleri için kullanılır.
 
-    
-Lemmatize edilmiş corpus ile modelleri eğitme ve kaydetme
-for param in parameters:
-    train_and_save_model(tokenized_corpus_lemmatized, param, "lemmatized_model")
-    # Stemlenmiş corpus ile modelleri eğitme ve kaydetme
-for param in parameters:
-    train_and_save_model(tokenized_corpus_stemmed, param, "stemmed_model")  Sonucunda 8 tane Stemmed ve 8 tane Lemmatized olmak üzere 16 tane model eğitilmiştir.
+Bu analizler sonucunda, farklı modellerin benzer şarkılar önerme yetenekleri karşılaştırılır ve değerlendirilir.
 
-    from gensim.models import Word2Vec # Kütüphaneyi import ediyoruz.
- Model dosyalarını yüklemek
-model_1 = Word2Vec.load("lemmatized_model_cbow_window2_dim100.model")
-model_2 = Word2Vec.load("stemmed_model_skipgram_window4_dim100.model")
-model_3 = Word2Vec.load("lemmatized_model_skipgram_window2_dim300.model")
- 'young' kelimesi ile en benzer 3 kelimeyi ve skorlarını yazdırmak
-def print_similar_words(model, model_name):
-    similarity = model.wv.most_similar('young', topn=3)
-    print(f"\n{model_name} Modeli - 'young' ile En Benzer 3 Kelime:")
-    for word, score in similarity:
-        print(f"Kelime: {word}, Benzerlik Skoru: {score}")
- 3 model için benzer kelimeleri yazdır
-print_similar_words(model_1, "Lemmatized CBOW Window 2 Dim 100")
-print_similar_words(model_2, "Stemmed Skipgram Window 4 Dim 100")
-print_similar_words(model_3, "Lemmatized Skipgram Window 2 Dim 300")
- Örnek olarak "young" kelimesi için en benzer 3 kelimeyi skorları ile birlikte ekrana yazdırmasını istiyoruz.
- Stemmed edilmiş veriler için uyguladığımız kod parçalarını Lemmatized edilmiş veriler için bazı parametreleri değiştirerek kullanabiliriz. 
+## Sonuçlar ve Değerlendirme
 
-
-6- Sonuçların Değerlendirilmesi
-
-Şarkı açıklamaları üzerinden tür tahmini yapılmaya çalışılır.
-
-# Veri Setinin Kullanılabileceği Diğer Analizler 
-+ Keşifsel veri analizi
-+ Zamana bağlı trend analizi
-+ Sanatçı şarkı analizi 
-+ Görselleştirme işlemleri
-
-# Projede Kullanılan Kütüphaneler
-Tüm kütüphaneler kod kısmında açıkça belirtilmiştir.
-
-- Kütüphaneler ve Kullanılma Amacı
- 
-numpy -                   Çok boyutlu diziler,
-                        yüksek performanslı sayısal işlemler ve
-                        matrisleri işleme ve analiz etme konusunda
-                        başarılıdır. Veri manipülasyonu için kullanıldı.
-
-pandas -                 Veri işleme ve analiz için kullanıldı.
-
-nltk -                   Doğal dil işleme görevlerini basitleştirir. Tokenizasyon ve Lemmatizasyon için kullanıldı.
-
-matplotlib -              Grafiklerin çizimi için kulanılmıştır.
-
-scikit-learn -           TF-IDF vektörleştirme ve cosine similarity hesaplama işlemi için kullanıldı.
-
-gensim -                Word2vec vektörleştirme için kullanıldı.
+`metin_benzerligi.ipynb` notebook'u, farklı ön işleme ve vektörleştirme yöntemlerinin metin benzerliği skorları üzerindeki etkilerini gösteren görselleştirmeler ve matrisler sunar. Bu bölümde, projenin bulguları özetlenebilir ve hangi kombinasyonların belirli senaryolar için daha iyi sonuçlar verdiği belirtilebilir. Örneğin, lemmatization'ın stemming'e göre daha iyi sonuçlar verip vermediği, TF-IDF'in mi yoksa Word2Vec'in mi belirli görevler için daha uygun olduğu gibi çıkarımlar yapılabilir.
 
 
 
