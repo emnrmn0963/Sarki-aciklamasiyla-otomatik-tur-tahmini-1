@@ -74,21 +74,21 @@ Proje, Jupyter Notebook'lar aracılığıyla adım adım incelenebilir. Sırası
 5.  `metin_benzerligi.ipynb`: Farklı vektörleştirme yöntemleri ve ön işleme teknikleri kullanılarak metinler arası benzerlik analizini (Kosinüs ve Jaccard) yapar ve sonuçları görselleştirir.
 
 ## Dosya Yapısı
-├── data/
-│   ├── top500song.csv                  # Ham veri seti
-│   ├── preprocessed_data_lemmatized_only.csv # Lemmatized metinlerin ön işlenmiş hali
-│   ├── preprocessed_data_stemmed_only.csv    # Stemmed metinlerin ön işlenmiş hali
-│   ├── tfidf_lemmatized.csv            # Lemmatized veriden oluşturulan TF-IDF matrisi
-│   └── tfidf_stemmed.csv               # Stemmed veriden oluşturulan TF-IDF matrisi
-├── models/
-│   ├── Eğitilmiş 16 adet model dosyası
-├── notebooks/
-│   ├── 02_datapreproccess.ipynb        # Veri ön işleme adımları
-│   ├── lemmatizeandstemmed.ipynb       # Lemmatization ve Stemming karşılaştırması
-│   ├── vectorization_tf-idf.ipynb      # TF-IDF vektörleştirme
-│   ├── word2vec.ipynb                  # Word2Vec model eğitimi
-│   └── metin_benzerligi.ipynb          # Metin benzerliği analizi ve sonuçlar
-└── README.md                           # Bu dosya
+├── data/ <br>
+│   ├── top500song.csv                  # Ham veri seti  <br>
+│   ├── preprocessed_data_lemmatized_only.csv # Lemmatized metinlerin ön işlenmiş hali  <br>
+│   ├── preprocessed_data_stemmed_only.csv    # Stemmed metinlerin ön işlenmiş hali    <br>
+│   ├── tfidf_lemmatized.csv            # Lemmatized veriden oluşturulan TF-IDF matrisi <br>
+│   └── tfidf_stemmed.csv               # Stemmed veriden oluşturulan TF-IDF matrisi    <br>
+├── models/   <br>
+│   ├── Eğitilmiş 16 adet model dosyası  <br>
+├── notebooks/   <br>
+│   ├── 02_datapreproccess.ipynb        # Veri ön işleme adımları     <br> 
+│   ├── lemmatizeandstemmed.ipynb       # Lemmatization ve Stemming karşılaştırması   <br>
+│   ├── vectorization_tf-idf.ipynb      # TF-IDF vektörleştirme    <br>
+│   ├── word2vec.ipynb                  # Word2Vec model eğitimi   <br>
+│   └── metin_benzerligi.ipynb          # Metin benzerliği analizi ve sonuçlar   <br>
+└── README.md                           # Bu dosya   <br>
 
 ## Metodoloji
 
